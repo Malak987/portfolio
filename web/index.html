@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="A new Flutter project.">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="protofolio">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="logo.png"/>
+
+  <title>protofolio</title>
+  <link rel="manifest" href="manifest.json">
+
+  <!-- ⭐️ إضافة NFC Web API ⭐️ -->
+  <script>
+    // التحقق من دعم NFC
+    window.isNFCSupported = function() {
+      return 'NDEFReader' in window;
+    };
+
+    // قراءة NFC
+    window.readNFC = function() {
+      return new Promise(async (resolve, reject) => {
+        if (!window.isNFCSupported()) {
+          reject('NFC غير مدعوم في هذا المتصفح. استخدم Chrome على Android');
+          return;
+        }
+
+        try {
+          const ndef = new NDEFReader();
+          await ndef.scan();
+          
+          console.log('✅ جاري البحث عن بطاقات NFC...');
+          
+          ndef.addEventListener('reading', ({ message, serialNumber }) => {
+            console.log('📱 تم العثور على بطاقة:', serialNumber);
+            
+            let result = {
+              serialNumber: serialNumber,
+              records: []
+            };
+
+            for (const record of message.Records) {
+              console.log('Record type:', record.recordType);
+              console.log('Record data:', record.data);
+              
+              let data = '';
+              
+              if (record.recordType === 'text') {
+                const textDecoder = new TextDecoder(record.encoding || 'utf-8');
+                data = textDecoder.decode(record.data);
+              } else if (record.recordType === 'url') {
+                const textDecoder = new TextDecoder();
+                data = textDecoder.decode(record.data);
+              } else {
+                const textDecoder = new TextDecoder();
+                data = textDecoder.decode(record.data);
+              }
+              
+              result.records.push({
+                type: record.recordType,
+                data: data
+              });
+            }
+            
+            resolve(JSON.stringify(result));
+          });
+
+          ndef.addEventListener('readingerror', (error) => {
+            console.error('❌ خطأ في القراءة:', error);
+            reject('خطأ في قراءة البطاقة');
+          });
+
+         catch (error) {
+          console.error('❌ خطأ:', error);
+          reject(error.message || 'حدث خطأ غير متوقع');
+        }
+      });
+    };
+
+    // كتابة NFC
+    window.writeNFC = function(message) {
+      return new Promise(async (resolve, reject) => {
+        if (!window.isNFCSupported()) {
+          reject('NFC غير مدعوم');
+          return;
+        }
+
+        try {
+          const ndef = new NDEFReader();
+          
+          await ndef.write({
+            records: [{ 
+              recordType: "text", 
+              data: message 
+            }]
+          });
+          
+          console.log('✅ تمت الكتابة بنجاح');
+          resolve('تمت الكتابة بنجاح');
+          
+         catch (error) {
+          console.error('❌ خطأ في الكتابة:', error);
+          reject(error.message || 'فشلت الكتابة');
+        }
+      });
+    };
+
+    console.log('🔧 NFC Web API جاهز');
+  </script>
+</head>
+<body>
+<script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
