@@ -92,7 +92,7 @@ const List<Project> kProjects = [
     image: 'assets/web_projects/wedding.jpg',
     tech: ['Flutter Web', 'Firebase', 'RSVP System', 'Photo Gallery'],
     type: 'Web App',
-    liveUrl: 'https://weddingtest-2000.web.app/',
+    liveUrl: 'https://murad-maria.web.app/',
   ),
   Project(
     title: 'SaveKnee App',
