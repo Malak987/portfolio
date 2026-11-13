@@ -1,68 +1,48 @@
-import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../Utils/colors.dart';
 import '../../Utils/constants.dart';
 import '../../Widgets/section_shell.dart';
+import '../../Widgets/typewriter_text.dart';
 
-const LinearGradient _accentGradient = LinearGradient(
-  colors: [Color(0xff22d3ee), Color(0xffa855f7)],
-  begin: Alignment.topLeft,
-  end: Alignment.bottomRight,
-);
-
-class HeroSection extends StatefulWidget {
+class HeroSection extends StatelessWidget {
   final bool isMobile;
   const HeroSection({super.key, this.isMobile = false});
 
   @override
-  State<HeroSection> createState() => _HeroSectionState();
-}
-
-class _HeroSectionState extends State<HeroSection> {
-  @override
   Widget build(BuildContext context) {
-    final dpr = MediaQuery.devicePixelRatioOf(context);
     final screenH = MediaQuery.sizeOf(context).height;
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final width = constraints.maxWidth;
-        final isMobile = widget.isMobile || width < 600;
-        final isTablet = !isMobile && width >= 600 && width < 1024;
-        final isWeb = !isMobile && width >= 1024 && width < 1440;
+        final isMobileLayout = isMobile || width < 600;
+        final isTablet = !isMobileLayout && width >= 600 && width < 1024;
 
-        final helloFontSize = isMobile ? 14.0 : (isTablet ? 16.0 : (isWeb ? 18.0 : 20.0));
-        final nameFontSize = isMobile ? 30.0 : (isTablet ? 42.0 : (isWeb ? 56.0 : 70.0));
-        final roleFontSize = isMobile ? 22.0 : (isTablet ? 28.0 : (isWeb ? 36.0 : 42.0));
-        final bodyFontSize = isMobile ? 13.0 : (isTablet ? 14.0 : (isWeb ? 16.0 : 18.0));
-        final contentWidth = isMobile ? 300.0 : (isTablet ? 450.0 : (isWeb ? 550.0 : 600.0));
-        final heroHeightFactor = (isMobile || isTablet) ? 0.9 : 1.0;
-        final horizontalCardMargin = isMobile ? 12.0 : (isTablet ? 32.0 : (isWeb ? 80.0 : 120.0));
+        final helloFontSize = isMobileLayout ? 14.0 : (isTablet ? 16.0 : 19.0);
+        final nameFontSize = isMobileLayout ? 32.0 : (isTablet ? 44.0 : 62.0);
+        final roleFontSize = isMobileLayout ? 21.0 : (isTablet ? 26.0 : 34.0);
+        final bodyFontSize = isMobileLayout ? 13.5 : (isTablet ? 14.5 : 16.5);
+        final contentWidth = isMobileLayout ? 320.0 : (isTablet ? 450.0 : 560.0);
+        final heroHeightFactor = (isMobileLayout || isTablet) ? 0.92 : 1.0;
+        final horizontalCardMargin = isMobileLayout ? 12.0 : (isTablet ? 32.0 : 80.0);
         final innerPadding = EdgeInsets.symmetric(
-          horizontal: isMobile ? 20 : (isTablet ? 32 : (isWeb ? 50 : 60)),
-          vertical: isMobile ? 30 : (isTablet ? 60 : 100),
+          horizontal: isMobileLayout ? 20 : (isTablet ? 32 : 55),
+          vertical: isMobileLayout ? 30 : (isTablet ? 60 : 100),
         );
-
-        final buttonFontSize = isMobile ? 13.0 : (isTablet ? 14.0 : (isWeb ? 15.0 : 16.0));
-        final buttonIconSize = isMobile ? 14.0 : (isTablet ? 16.0 : (isWeb ? 17.0 : 18.0));
-        final buttonPadding = EdgeInsets.symmetric(
-          horizontal: isMobile ? 20 : (isTablet ? 26 : (isWeb ? 30 : 34)),
-          vertical: isMobile ? 10 : (isTablet ? 12 : (isWeb ? 14 : 16)),
-        );
-        final socialIconSize = isMobile ? 22.0 : (isTablet ? 24.0 : (isWeb ? 26.0 : 28.0));
-        final showRightPanel = isWeb || (!isMobile && width >= 1440);
+        final socialIconSize = isMobileLayout ? 20.0 : 24.0;
+        final showRightPanel = !isMobileLayout && !isTablet;
 
         return SectionShell(
           minHeight: heroHeightFactor * screenH,
           outerPadding: const EdgeInsets.symmetric(vertical: 80),
           cardMargin: EdgeInsets.symmetric(horizontal: horizontalCardMargin),
-          cardRadius: BorderRadius.circular(isMobile ? 22 : (isTablet ? 24 : 28)),
+          cardRadius: BorderRadius.circular(isMobileLayout ? 22 : 28),
           cardPadding: EdgeInsets.zero,
           background: [
-            Positioned(top: 20, right: -40, child: BlurCircle(size: isMobile ? 180 : (isTablet ? 220 : (isWeb ? 260 : 300)), color: const Color(0xff22d3ee))),
-            Positioned(bottom: 20, left: -60, child: BlurCircle(size: isMobile ? 200 : (isTablet ? 240 : (isWeb ? 280 : 330)), color: const Color(0xffa855f7))),
+            Positioned(top: 20, right: -40, child: GlowOrb(size: isMobileLayout ? 180 : 280, color: AppColors.mist)),
+            Positioned(bottom: 20, left: -60, child: GlowOrb(size: isMobileLayout ? 200 : 310, color: AppColors.gold)),
           ],
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -74,52 +54,102 @@ class _HeroSectionState extends State<HeroSection> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (isMobile) const SizedBox(height: 40),
-                      Text("Hello, I'm", style: TextStyle(color: AppColors.green.withOpacity(0.9), fontSize: helloFontSize, fontWeight: FontWeight.w500, letterSpacing: 1.3)),
-                      const SizedBox(height: 20),
-                      GradientText(AppConstants.name, gradient: _accentGradient, style: TextStyle(fontSize: nameFontSize, fontWeight: FontWeight.bold, height: 1.1, letterSpacing: 1.2)),
-                      const SizedBox(height: 20),
-                      RepaintBoundary(
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: AnimatedTextKit(
-                            repeatForever: true,
-                            animatedTexts: [
-                              TypewriterAnimatedText(AppConstants.role1, textStyle: TextStyle(color: const Color(0xff22d3ee), fontSize: roleFontSize, fontWeight: FontWeight.w700), speed: const Duration(milliseconds: 90)),
-                              TypewriterAnimatedText(AppConstants.role2, textStyle: TextStyle(color: const Color(0xff22d3ee), fontSize: roleFontSize, fontWeight: FontWeight.w700), speed: const Duration(milliseconds: 90)),
-                              TypewriterAnimatedText(AppConstants.role3, textStyle: TextStyle(color: const Color(0xff22d3ee), fontSize: roleFontSize, fontWeight: FontWeight.w700), speed: const Duration(milliseconds: 90)),
-                            ],
+                      if (isMobileLayout) const SizedBox(height: 60),
+                      Row(
+                        children: [
+                          Container(width: 34, height: 2, decoration: BoxDecoration(gradient: AppColors.accentGradient, borderRadius: BorderRadius.circular(2))),
+                          const SizedBox(width: 10),
+                          Text("HELLO, I'M",
+                              style: TextStyle(
+                                  color: AppColors.slate,
+                                  fontSize: helloFontSize,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 3)),
+                        ],
+                      ),
+                      const SizedBox(height: 18),
+                      ShaderMask(
+                        shaderCallback: (b) => AppColors.accentGradient.createShader(b),
+                        child: Text(AppConstants.name,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: nameFontSize,
+                                fontWeight: FontWeight.w900,
+                                height: 1.12,
+                                letterSpacing: 0.5)),
+                      ),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: FittedBox(
+                          alignment: Alignment.centerLeft,
+                          fit: BoxFit.scaleDown,
+                          child: TypewriterText(
+                            phrases: [AppConstants.role1, AppConstants.role2, AppConstants.role3],
+                            style: TextStyle(
+                                color: AppColors.gold,
+                                fontSize: roleFontSize,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.3),
                           ),
                         ),
                       ),
-                      const SizedBox(height: 40),
-                      SizedBox(width: contentWidth, child: Text("I design great UX in Figma \nand build beautiful Flutter apps for Android, iOS, and Web.", style: TextStyle(color: AppColors.slate.withOpacity(0.9), fontSize: bodyFontSize, height: 1.6))),
-                      const SizedBox(height: 40),
-                      _GradientButton(onPressed: () async { final url = Uri.parse("https://flowcv.com/resume/w0sjf0chwn"); if (await canLaunchUrl(url)) await launchUrl(url, mode: LaunchMode.externalApplication); }, icon: FontAwesomeIcons.download, label: "Download Resume", iconSize: buttonIconSize, fontSize: buttonFontSize, padding: buttonPadding),
-                      const SizedBox(height: 40),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: [
-                            _SocialIcon(icon: FontAwesomeIcons.facebook, url: AppConstants.facebook, size: socialIconSize),
-                            SizedBox(width: isMobile ? 10 : 16),
-                            _SocialIcon(icon: FontAwesomeIcons.instagram, url: AppConstants.instagram, size: socialIconSize),
-                            SizedBox(width: isMobile ? 10 : 16),
-                            _SocialIcon(icon: FontAwesomeIcons.linkedin, url: AppConstants.linkedin, size: socialIconSize),
-                            SizedBox(width: isMobile ? 10 : 16),
-                            _SocialIcon(icon: FontAwesomeIcons.figma, url: AppConstants.figma, size: socialIconSize),
-                            SizedBox(width: isMobile ? 10 : 16),
-                            _SocialIcon(icon: FontAwesomeIcons.github, url: AppConstants.github, size: socialIconSize),
-                            SizedBox(width: isMobile ? 10 : 16),
-                            _SocialIcon(icon: FontAwesomeIcons.behance, url: AppConstants.behance, size: socialIconSize),
-                          ],
+                      const SizedBox(height: 30),
+                      SizedBox(
+                        width: contentWidth,
+                        child: Text(
+                          "I design great UX in Figma and build beautiful Flutter apps for Android, iOS, and Web — from pixel-perfect design to clean, scalable code.",
+                          style: TextStyle(
+                              color: AppColors.slate.withOpacity(0.95),
+                              fontSize: bodyFontSize,
+                              height: 1.65),
                         ),
+                      ),
+                      const SizedBox(height: 32),
+                      Wrap(
+                        spacing: 14,
+                        runSpacing: 14,
+                        children: [
+                          _GradientButton(
+                            onPressed: () => launchUrl(Uri.parse("https://flowcv.com/resume/w0sjf0chwn"), mode: LaunchMode.externalApplication),
+                            icon: FontAwesomeIcons.download,
+                            label: "Download Resume",
+                            iconSize: isMobileLayout ? 13 : 15,
+                            fontSize: isMobileLayout ? 13 : 15,
+                          ),
+                          _OutlineButton(
+                            onPressed: () {
+                              final projectsKey = AppSectionTargets.projects;
+                              final ctx = projectsKey.currentContext;
+                              if (ctx != null) {
+                                Scrollable.ensureVisible(ctx, duration: const Duration(milliseconds: 650), curve: Curves.easeInOutCubic, alignment: -0.06);
+                              }
+                            },
+                            icon: FontAwesomeIcons.eye,
+                            label: "View My Work",
+                            iconSize: isMobileLayout ? 13 : 15,
+                            fontSize: isMobileLayout ? 13 : 15,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 36),
+                      Wrap(
+                        spacing: isMobileLayout ? 8 : 12,
+                        runSpacing: 10,
+                        children: [
+                          _SocialIcon(icon: FontAwesomeIcons.github, url: AppConstants.github, size: socialIconSize),
+                          _SocialIcon(icon: FontAwesomeIcons.linkedin, url: AppConstants.linkedin, size: socialIconSize),
+                          _SocialIcon(icon: FontAwesomeIcons.figma, url: AppConstants.figma, size: socialIconSize),
+                          _SocialIcon(icon: FontAwesomeIcons.behance, url: AppConstants.behance, size: socialIconSize),
+                          _SocialIcon(icon: FontAwesomeIcons.instagram, url: AppConstants.instagram, size: socialIconSize),
+                          _SocialIcon(icon: FontAwesomeIcons.facebook, url: AppConstants.facebook, size: socialIconSize),
+                        ],
                       ),
                     ],
                   ),
                 ),
               ),
-              if (showRightPanel) const SizedBox(width: 40),
+              if (showRightPanel) const SizedBox(width: 30),
               if (showRightPanel) const _HeroRightSide(),
             ],
           ),
@@ -129,46 +159,115 @@ class _HeroSectionState extends State<HeroSection> {
   }
 }
 
-class GradientText extends StatelessWidget {
-  final String text;
-  final TextStyle style;
-  final Gradient gradient;
-  const GradientText(this.text, {super.key, required this.gradient, required this.style});
-
-  @override
-  Widget build(BuildContext context) {
-    return ShaderMask(
-      shaderCallback: (bounds) => gradient.createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
-      child: Text(text, style: style.copyWith(color: Colors.white)),
-    );
-  }
+/// Simple holder so the hero "View My Work" button can jump to the projects.
+class AppSectionTargets {
+  static GlobalKey projects = GlobalKey();
 }
 
 class _GradientButton extends StatelessWidget {
   final VoidCallback onPressed;
-  final IconData icon;
+  final FaIconData icon;
   final String label;
   final double iconSize;
   final double fontSize;
-  final EdgeInsets padding;
-  const _GradientButton({required this.onPressed, required this.icon, required this.label, required this.iconSize, required this.fontSize, required this.padding});
+  const _GradientButton({required this.onPressed, required this.icon, required this.label, required this.iconSize, required this.fontSize});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(gradient: _accentGradient, borderRadius: BorderRadius.circular(999), boxShadow: [BoxShadow(color: const Color(0xff22d3ee).withOpacity(0.45), blurRadius: 20, offset: const Offset(0, 10))]),
-      child: ElevatedButton.icon(
-        onPressed: onPressed,
-        icon: FaIcon(icon, size: iconSize),
-        label: Text(label, style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.w600)),
-        style: ElevatedButton.styleFrom(backgroundColor: Colors.transparent, shadowColor: Colors.transparent, padding: padding, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999))),
-      ),
+    return _HoverBuilder(builder: (hover) {
+      return Material(
+        color: Colors.transparent,
+        child: Ink(
+          decoration: BoxDecoration(
+            gradient: AppColors.accentGradient,
+            borderRadius: BorderRadius.circular(999),
+            boxShadow: hover
+                ? [BoxShadow(color: AppColors.gold.withOpacity(0.45), blurRadius: 22, offset: const Offset(0, 10))]
+                : [BoxShadow(color: AppColors.mist.withOpacity(0.25), blurRadius: 14, offset: const Offset(0, 6))],
+          ),
+          child: InkWell(
+            onTap: onPressed,
+            borderRadius: BorderRadius.circular(999),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  FaIcon(icon, size: iconSize, color: Colors.white),
+                  const SizedBox(width: 10),
+                  Text(label, style: TextStyle(color: Colors.white, fontSize: fontSize, fontWeight: FontWeight.w700)),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    });
+  }
+}
+
+class _OutlineButton extends StatelessWidget {
+  final VoidCallback onPressed;
+  final FaIconData icon;
+  final String label;
+  final double iconSize;
+  final double fontSize;
+  const _OutlineButton({required this.onPressed, required this.icon, required this.label, required this.iconSize, required this.fontSize});
+
+  @override
+  Widget build(BuildContext context) {
+    return _HoverBuilder(builder: (hover) {
+      return Material(
+        color: Colors.transparent,
+        child: Ink(
+          decoration: BoxDecoration(
+            color: hover ? AppColors.gold.withOpacity(0.10) : Colors.transparent,
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(color: hover ? AppColors.gold.withOpacity(0.7) : AppColors.gold.withOpacity(0.45)),
+          ),
+          child: InkWell(
+            onTap: onPressed,
+            borderRadius: BorderRadius.circular(999),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  FaIcon(icon, size: iconSize, color: AppColors.gold),
+                  const SizedBox(width: 10),
+                  Text(label, style: TextStyle(color: AppColors.lightSlate, fontSize: fontSize, fontWeight: FontWeight.w700)),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    });
+  }
+}
+
+class _HoverBuilder extends StatefulWidget {
+  final Widget Function(bool hover) builder;
+  const _HoverBuilder({required this.builder});
+
+  @override
+  State<_HoverBuilder> createState() => _HoverBuilderState();
+}
+
+class _HoverBuilderState extends State<_HoverBuilder> {
+  bool _hover = false;
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hover = true),
+      onExit: (_) => setState(() => _hover = false),
+      child: widget.builder(_hover),
     );
   }
 }
 
 class _SocialIcon extends StatefulWidget {
-  final IconData icon;
+  final FaIconData icon;
   final String url;
   final double size;
   const _SocialIcon({required this.icon, required this.url, this.size = 24});
@@ -185,12 +284,22 @@ class _SocialIconState extends State<_SocialIcon> {
       onEnter: (_) => setState(() => isHovered = true),
       onExit: (_) => setState(() => isHovered = false),
       child: AnimatedScale(
-        scale: isHovered ? 1.15 : 1.0,
+        scale: isHovered ? 1.18 : 1.0,
         duration: const Duration(milliseconds: 160),
         curve: Curves.easeOut,
         child: Container(
-          decoration: BoxDecoration(shape: BoxShape.circle, gradient: isHovered ? _accentGradient : null, color: isHovered ? null : Colors.transparent, boxShadow: isHovered ? [BoxShadow(color: const Color(0xff22d3ee).withOpacity(0.55), blurRadius: 18, offset: const Offset(0, 8))] : const []),
-          child: IconButton(icon: FaIcon(widget.icon), color: isHovered ? Colors.white : AppColors.slate, iconSize: widget.size, onPressed: () async { final uri = Uri.parse(widget.url); if (await canLaunchUrl(uri)) await launchUrl(uri, mode: LaunchMode.externalApplication); }),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: isHovered ? AppColors.accentGradient : null,
+            border: Border.all(color: isHovered ? Colors.transparent : Colors.white.withOpacity(0.12)),
+            boxShadow: isHovered ? [BoxShadow(color: AppColors.gold.withOpacity(0.45), blurRadius: 16, offset: const Offset(0, 6))] : const [],
+          ),
+          child: IconButton(
+            icon: FaIcon(widget.icon),
+            color: isHovered ? Colors.white : AppColors.slate,
+            iconSize: widget.size,
+            onPressed: () => launchUrl(Uri.parse(widget.url), mode: LaunchMode.externalApplication),
+          ),
         ),
       ),
     );
@@ -199,30 +308,68 @@ class _SocialIconState extends State<_SocialIcon> {
 
 class _HeroRightSide extends StatelessWidget {
   const _HeroRightSide();
+
   @override
   Widget build(BuildContext context) {
     final dpr = MediaQuery.devicePixelRatioOf(context);
     return Padding(
-      padding: const EdgeInsets.only(right: 40.0),
+      padding: const EdgeInsets.only(right: 45.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            width: 230, height: 260,
-            decoration: BoxDecoration(gradient: const LinearGradient(colors: [Color(0x9922d3ee), Color(0x990ea5e9), Color(0x99a855f7)], begin: Alignment.topLeft, end: Alignment.bottomRight), borderRadius: BorderRadius.circular(26), boxShadow: [BoxShadow(color: const Color(0xff22d3ee).withOpacity(0.4), blurRadius: 26, offset: const Offset(0, 18))]),
+            width: 240, height: 270,
+            decoration: BoxDecoration(
+              color: const Color(0xFF151519),
+              borderRadius: BorderRadius.circular(26),
+              border: Border.all(color: AppColors.gold.withOpacity(0.35), width: 1.2),
+              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 30, offset: const Offset(0, 18))],
+            ),
             child: Stack(
               children: [
-                Align(alignment: Alignment.center, child: Image.asset("assets/tools/flutter.png", height: 200, width: 200, color: Colors.white.withOpacity(1), filterQuality: FilterQuality.medium, cacheWidth: (200 * dpr).round())),
-                Positioned(top: 18, left: 18, child: Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6), decoration: BoxDecoration(color: Colors.black.withOpacity(0.28), borderRadius: BorderRadius.circular(999)), child: const Text("Flutter & UI/UX", style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w500)))),
-                Positioned(bottom: 18, right: 18, child: Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: Colors.white.withOpacity(0.12), borderRadius: BorderRadius.circular(999)), child: const Row(mainAxisSize: MainAxisSize.min, children: [Icon(Icons.star_rounded, size: 16, color: Colors.amber), SizedBox(width: 6), Text("Full Time", style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w500))]))),
+                Align(
+                  alignment: Alignment.center,
+                  child: Image.asset("assets/tools/flutter.png",
+                      height: 190, width: 190,
+                      color: Colors.white.withOpacity(0.92),
+                      filterQuality: FilterQuality.medium, cacheWidth: (190 * dpr).round()),
+                ),
+                Positioned(
+                  top: 18, left: 18,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(color: Colors.black.withOpacity(0.40), borderRadius: BorderRadius.circular(999)),
+                    child: const Text("Flutter & UI/UX", style: TextStyle(color: AppColors.lightSlate, fontSize: 11, fontWeight: FontWeight.w600)),
+                  ),
+                ),
+                Positioned(
+                  bottom: 18, right: 18,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(color: AppColors.gold.withOpacity(0.14), borderRadius: BorderRadius.circular(999), border: Border.all(color: AppColors.gold.withOpacity(0.30))),
+                    child: const Row(mainAxisSize: MainAxisSize.min, children: [
+                      Icon(Icons.star_rounded, size: 15, color: AppColors.gold),
+                      SizedBox(width: 6),
+                      Text("Full Time", style: TextStyle(color: AppColors.lightSlate, fontSize: 11, fontWeight: FontWeight.w600)),
+                    ]),
+                  ),
+                ),
               ],
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 22),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-            decoration: BoxDecoration(color: Colors.white.withOpacity(0.08), borderRadius: BorderRadius.circular(999), border: Border.all(color: Colors.white.withOpacity(0.12))),
-            child: const Row(mainAxisSize: MainAxisSize.min, children: [Icon(Icons.circle, size: 10, color: Colors.lightGreenAccent), SizedBox(width: 8), Text("Available for freelance", style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w500))]),
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.06),
+              borderRadius: BorderRadius.circular(999),
+              border: Border.all(color: Colors.white.withOpacity(0.10)),
+            ),
+            child: const Row(mainAxisSize: MainAxisSize.min, children: [
+              Icon(Icons.circle, size: 9, color: AppColors.mint),
+              SizedBox(width: 8),
+              Text("Available for freelance", style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w600)),
+            ]),
           ),
         ],
       ),

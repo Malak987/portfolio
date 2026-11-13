@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import '../../Utils/responsive_layout.dart';
+import '../../Utils/colors.dart';
 import 'about_section.dart';
 import 'contact_section.dart';
 import 'design_section.dart';
 import 'hero_section.dart';
 import 'projects_section.dart';
 import 'skills_section.dart';
+import '../../Widgets/nav_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,41 +16,71 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final ScrollController _scroll = ScrollController();
+
+  final GlobalKey _aboutKey = GlobalKey();
+  final GlobalKey _designKey = GlobalKey();
+  final GlobalKey _projectsKey = GlobalKey();
+  final GlobalKey _skillsKey = GlobalKey();
+  final GlobalKey _contactKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
-    // 🔥 Preload critical images to prevent Layout Shift & speed up FCP
+    // 🔥 Preload the two most visible images so they paint instantly
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       precacheImage(const AssetImage('assets/me/me.jpg'), context);
       precacheImage(const AssetImage('assets/tools/flutter.png'), context);
-      precacheImage(const AssetImage('assets/project_figma/flash.png'), context);
     });
+    // Hero "View my work" button target
+    AppSectionTargets.projects = _projectsKey;
+  }
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ResponsiveLayout(
-        mobile: _buildScrollView(isMobile: true),
-        tablet: _buildScrollView(isMobile: false),
-        desktop: _buildScrollView(isMobile: false),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: CustomScrollView(
+              controller: _scroll,
+              physics: const ClampingScrollPhysics(),
+              cacheExtent: 600,
+              slivers: [
+                const SliverToBoxAdapter(child: HeroSection()),
+                SliverToBoxAdapter(child: AboutSection(key: _aboutKey)),
+                SliverToBoxAdapter(child: DesignSection(key: _designKey)),
+                SliverToBoxAdapter(child: ProjectsSection(key: _projectsKey)),
+                SliverToBoxAdapter(child: SkillsSection(key: _skillsKey)),
+                SliverToBoxAdapter(child: ContactSection(key: _contactKey)),
+                const SliverToBoxAdapter(child: SizedBox(height: 30)),
+              ],
+            ),
+          ),
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: NavBar(
+              scrollController: _scroll,
+              links: [
+                SectionLink('About', _aboutKey),
+                SectionLink('Designs', _designKey),
+                SectionLink('Projects', _projectsKey),
+                SectionLink('Skills', _skillsKey),
+                SectionLink('Contact', _contactKey),
+              ],
+            ),
+          ),
+        ],
       ),
-    );
-  }
-
-  Widget _buildScrollView({required bool isMobile}) {
-    return CustomScrollView(
-      physics: const ClampingScrollPhysics(),
-      cacheExtent: 900, // Keeps off-screen sections ready
-      slivers: [
-        SliverToBoxAdapter(child: HeroSection(isMobile: isMobile)),
-        SliverToBoxAdapter(child: AboutSection(isMobile: isMobile)),
-        SliverToBoxAdapter(child: DesignSection(isMobile: isMobile)),
-        SliverToBoxAdapter(child: ProjectsSection(isMobile: isMobile)),
-        SliverToBoxAdapter(child: SkillsSection(isMobile: isMobile)),
-        SliverToBoxAdapter(child: ContactSection(isMobile: isMobile)),
-        const SliverToBoxAdapter(child: SizedBox(height: 40)),
-      ],
     );
   }
 }

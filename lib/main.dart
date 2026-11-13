@@ -1,8 +1,7 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'utils/colors.dart';
-import 'sections/screens/splash_screen.dart';
-import 'dart:ui';
+import 'Utils/colors.dart';
+import 'Sections/Screens/home_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,29 +15,19 @@ class MyPortfolioApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Malak Ezat Portfolio',
-
+      title: 'Malak Ezat | Flutter Developer & UI/UX Designer',
       theme: ThemeData(
         useMaterial3: true,
-
         scaffoldBackgroundColor: AppColors.darkNavy,
-
-        textTheme: GoogleFonts.cairoTextTheme(
-          Theme.of(context).textTheme,
-        ).apply(
-          bodyColor: AppColors.lightSlate,
-          displayColor: AppColors.white,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: AppColors.gold,
+          brightness: Brightness.dark,
         ),
       ),
-
       scrollBehavior: const MaterialScrollBehavior().copyWith(
-        dragDevices: {
-          PointerDeviceKind.mouse,
-          PointerDeviceKind.touch,
-        },
+        dragDevices: {PointerDeviceKind.mouse, PointerDeviceKind.touch},
       ),
-
-      home: const SplashScreen(),
+      home: const HomeScreen(),
     );
   }
 }

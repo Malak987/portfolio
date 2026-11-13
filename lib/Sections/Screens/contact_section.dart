@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../Utils/colors.dart';
+import '../../Utils/constants.dart';
 import '../../Widgets/section_shell.dart';
 
 class ContactSection extends StatelessWidget {
@@ -14,44 +16,166 @@ class ContactSection extends StatelessWidget {
       final width = constraints.maxWidth;
       final isMobileLayout = isMobile || width < 600;
       final isTablet = !isMobileLayout && width >= 600 && width < 1024;
-      final isWeb = !isMobileLayout && width >= 1024 && width < 1440;
 
-      final horizontalCardMargin = isMobileLayout ? 12 : (isTablet ? 32 : (isWeb ? 80 : 120));
-      final innerPadding = EdgeInsets.symmetric(horizontal: isMobileLayout ? 20 : (isTablet ? 32 : (isWeb ? 50 : 60)), vertical: isMobileLayout ? 40 : (isTablet ? 60 : 80));
-      final smallTitleFontSize = isMobileLayout ? 16 : (isTablet ? 17 : 18);
-      final mainTitleFontSize = isMobileLayout ? 28 : (isTablet ? 34 : (isWeb ? 42 : 50));
-      final bodyFontSize = isMobileLayout ? 14 : (isTablet ? 16 : 18);
-      final footerFontSize = isMobileLayout ? 12 : (isTablet ? 13 : 14);
-      final contentWidth = isMobileLayout ? 300 : (isTablet ? 420 : (isWeb ? 520 : 560));
-      final buttonPadding = EdgeInsets.symmetric(horizontal: isMobileLayout ? 25 : (isTablet ? 32 : 40), vertical: isMobileLayout ? 12 : (isTablet ? 16 : 20));
-      final buttonFontSize = isMobileLayout ? 16 : (isTablet ? 17 : 18);
+      final horizontalCardMargin = isMobileLayout ? 12.0 : (isTablet ? 32.0 : 80.0);
+      final innerPadding = EdgeInsets.symmetric(
+          horizontal: isMobileLayout ? 20 : (isTablet ? 32 : 50),
+          vertical: isMobileLayout ? 40 : 70);
+      final mainTitleFontSize = isMobileLayout ? 30.0 : (isTablet ? 36.0 : 48.0);
 
       return SectionShell(
         minHeight: 0.8 * screenH,
         outerPadding: const EdgeInsets.symmetric(vertical: 80),
-        cardMargin: EdgeInsets.symmetric(horizontal: horizontalCardMargin.toDouble()),
-        cardRadius: BorderRadius.circular(isMobileLayout ? 22 : (isTablet ? 24 : 28)),
+        cardMargin: EdgeInsets.symmetric(horizontal: horizontalCardMargin),
+        cardRadius: BorderRadius.circular(isMobileLayout ? 22 : 28),
         cardPadding: innerPadding,
         background: [
-          Positioned(top: 20, right: -40, child: BlurCircle(size: isMobileLayout ? 160 : (isTablet ? 200 : (isWeb ? 240 : 280)), color: const Color(0xff22d3ee))),
-          Positioned(bottom: 20, left: -60, child: BlurCircle(size: isMobileLayout ? 190 : (isTablet ? 220 : (isWeb ? 260 : 300)), color: const Color(0xffa855f7))),
+          Positioned(top: 20, right: -40, child: GlowOrb(size: isMobileLayout ? 160 : 250, color: AppColors.bronze)),
+          Positioned(bottom: 20, left: -60, child: GlowOrb(size: isMobileLayout ? 180 : 280, color: AppColors.mist)),
         ],
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Text('05. Communication', style: TextStyle(color: AppColors.green, fontSize: smallTitleFontSize.toDouble())),
-          const SizedBox(height: 20),
-          Text("Let's Talk !", style: TextStyle(color: AppColors.lightSlate, fontSize: mainTitleFontSize.toDouble(), fontWeight: FontWeight.bold)),
-          const SizedBox(height: 20),
-          SizedBox(width: contentWidth.toDouble(), child: Text('Have a project, an idea, or a tech topic you’d like to talk about?\nI’m always open to connecting—feel free to reach out.', textAlign: TextAlign.center, style: TextStyle(color: AppColors.slate, fontSize: bodyFontSize.toDouble(), height: 1.7))),
-          const SizedBox(height: 40),
-          ElevatedButton(
-            onPressed: () async { final url = Uri.parse("https://wa.me/201229361950"); if (await canLaunchUrl(url)) await launchUrl(url, mode: LaunchMode.externalApplication); },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.transparent, foregroundColor: AppColors.green, side: const BorderSide(color: AppColors.green, width: 2), padding: buttonPadding, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999))),
-            child: Text('Send Me', style: TextStyle(color: AppColors.green, fontSize: buttonFontSize.toDouble())),
-          ),
-          const SizedBox(height: 60),
-          Text('Built with Flutter 💙', style: TextStyle(color: AppColors.slate, fontSize: footerFontSize.toDouble())),
-        ]),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(width: 26, height: 2, decoration: BoxDecoration(gradient: AppColors.accentGradient, borderRadius: BorderRadius.circular(2))),
+                const SizedBox(width: 10),
+                Text('05. LET\'S CONNECT',
+                    style: TextStyle(
+                        color: AppColors.slate,
+                        fontSize: isMobileLayout ? 13 : 15,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 3)),
+                const SizedBox(width: 10),
+                Container(width: 26, height: 2, decoration: BoxDecoration(gradient: AppColors.accentGradient, borderRadius: BorderRadius.circular(2))),
+              ],
+            ),
+            const SizedBox(height: 18),
+            ShaderMask(
+              shaderCallback: (b) => AppColors.accentGradient.createShader(b),
+              child: Text("Let's Talk!",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: mainTitleFontSize,
+                      fontWeight: FontWeight.w900)),
+            ),
+            const SizedBox(height: 18),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 520),
+              child: Text(
+                'Have a project, an idea, or a tech topic you’d like to talk about?\nI’m always open to connecting—feel free to reach out.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: AppColors.slate,
+                    fontSize: isMobileLayout ? 14 : 16.5,
+                    height: 1.7),
+              ),
+            ),
+            const SizedBox(height: 34),
+            _TalkButton(isMobile: isMobileLayout),
+            const SizedBox(height: 36),
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: isMobileLayout ? 6 : 10,
+              runSpacing: 8,
+              children: [
+                _FooterLink(icon: FontAwesomeIcons.envelope, url: 'mailto:${AppConstants.email}', tooltip: AppConstants.email),
+                _FooterLink(icon: FontAwesomeIcons.whatsapp, url: AppConstants.phone, tooltip: 'WhatsApp'),
+                _FooterLink(icon: FontAwesomeIcons.linkedin, url: AppConstants.linkedin, tooltip: 'LinkedIn'),
+                _FooterLink(icon: FontAwesomeIcons.github, url: AppConstants.github, tooltip: 'GitHub'),
+                _FooterLink(icon: FontAwesomeIcons.instagram, url: AppConstants.instagram, tooltip: 'Instagram'),
+              ],
+            ),
+            const SizedBox(height: 34),
+            Text('Built with Flutter 💙',
+                style: TextStyle(
+                    color: AppColors.slate.withOpacity(0.75),
+                    fontSize: isMobileLayout ? 12 : 13.5)),
+          ],
+        ),
       );
     });
+  }
+}
+
+class _TalkButton extends StatefulWidget {
+  final bool isMobile;
+  const _TalkButton({required this.isMobile});
+
+  @override
+  State<_TalkButton> createState() => _TalkButtonState();
+}
+
+class _TalkButtonState extends State<_TalkButton> {
+  bool _hover = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hover = true),
+      onExit: (_) => setState(() => _hover = false),
+      child: Material(
+        color: Colors.transparent,
+        child: Ink(
+          decoration: BoxDecoration(
+            color: _hover ? AppColors.mint.withOpacity(0.10) : Colors.transparent,
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(color: _hover ? AppColors.mint : AppColors.mint.withOpacity(0.6), width: 1.6),
+          ),
+          child: InkWell(
+            onTap: () => launchUrl(Uri.parse(AppConstants.phone), mode: LaunchMode.externalApplication),
+            borderRadius: BorderRadius.circular(999),
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                  horizontal: widget.isMobile ? 30 : 40, vertical: widget.isMobile ? 13 : 17),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  FaIcon(FontAwesomeIcons.whatsapp, size: widget.isMobile ? 17 : 19, color: AppColors.mint),
+                  const SizedBox(width: 10),
+                  Text('Say Hello',
+                      style: TextStyle(
+                          color: AppColors.mint,
+                          fontSize: widget.isMobile ? 15 : 17,
+                          fontWeight: FontWeight.w700)),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _FooterLink extends StatefulWidget {
+  final FaIconData icon;
+  final String url;
+  final String tooltip;
+  const _FooterLink({required this.icon, required this.url, required this.tooltip});
+
+  @override
+  State<_FooterLink> createState() => _FooterLinkState();
+}
+
+class _FooterLinkState extends State<_FooterLink> {
+  bool _hover = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: widget.tooltip,
+      waitDuration: const Duration(milliseconds: 400),
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _hover = true),
+        onExit: (_) => setState(() => _hover = false),
+        child: IconButton(
+          onPressed: () => launchUrl(Uri.parse(widget.url), mode: LaunchMode.externalApplication),
+          icon: FaIcon(widget.icon, size: 17),
+          color: _hover ? AppColors.gold : AppColors.slate,
+        ),
+      ),
+    );
   }
 }
